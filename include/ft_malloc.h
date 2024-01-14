@@ -10,7 +10,8 @@ typedef struct s_heap {
     struct s_heap *next;
     struct s_heap *prev;
     size_t size;
-    int is_free;
+    size_t block_size;
+    size_t free_block;
 } t_heap;
 
 typedef struct s_block {
