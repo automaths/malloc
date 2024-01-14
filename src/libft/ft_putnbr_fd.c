@@ -1,3 +1,5 @@
+#include "ft_malloc.h"
+
 void	ft_putnbr_fd(int n, int fd)
 {
 	char	c;

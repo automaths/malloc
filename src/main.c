@@ -1,26 +1,5 @@
 #include "ft_malloc.h"
 
-void *malloc(size_t size)
-{
-    write(1, "malloc\n", 7);
-    (void)size;
-    return (NULL);
-}
-
-void free(void *ptr)
-{
-    write(1, "free\n", 5);
-    (void)ptr;
-}
-
-void *realloc(void *ptr, size_t size)
-{
-    write(1, "realloc\n", 8);
-    (void)ptr;
-    (void)size;
-    return (NULL);
-}
-
 int main()
 {
     void *ptr = malloc(10);
