@@ -1,5 +1,7 @@
 #include "ft_malloc.h"
 
+t_mem ft_data;
+
 int main()
 {
     void *ptr = malloc(10);
