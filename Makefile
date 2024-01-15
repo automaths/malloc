@@ -6,6 +6,7 @@ SRCS        := 	main.c \
 				malloc.c \
 				realloc.c \
 				free.c \
+				utils.c \
 				libft/ft_strlen.c \
 				libft/ft_putnbr_fd.c \
 
