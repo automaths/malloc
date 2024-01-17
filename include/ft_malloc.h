@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/mman.h>
+#include <stdbool.h>
 
 #define TINY_ZONE_SIZE getpagesize() * 8
 #define SMALL_ZONE_SIZE getpagesize() * 32
@@ -22,11 +23,12 @@ typedef struct s_alloc {
 } t_alloc;
 
 typedef struct s_mem {
+    void *ptr;
     struct s_alloc *first_alloc;
     struct s_mem *next;
     struct s_mem *prev;
     size_t alloc_size;
-    size_t free_alloc;
+    bool free_alloc;
 } t_mem;
 
 void    *malloc(size_t size);
