@@ -2,32 +2,32 @@
 
 extern t_mem ft_data;
 
-static void* search_available_mem_segment(size_t size)
-{
-    t_mem *mem_ptr = &ft_data;
-    void *ptr = NULL;
+// static void* search_available_mem_segment(size_t size)
+// {
+//     t_mem *mem_ptr = &ft_data;
+//     void *ptr = NULL;
 
-    while (mem_ptr->next != NULL)
-    {
-        if (mem_ptr->alloc_size >= size && mem_ptr->free_alloc >= 1)
-        {
-            struct s_alloc *alloc_ptr = mem_ptr->first_alloc;
-            while (alloc_ptr->next != NULL)
-            {
-                if (alloc_ptr->is_free == 1)
-                {
-                    alloc_ptr->is_free = 0;
-                    ptr = alloc_ptr->ptr;
-                }
-                alloc_ptr = alloc_ptr->next;
-            }
-        }
-    }
-    while (mem_ptr->prev != NULL){
-        mem_ptr = mem_ptr->prev;
-    }
-    return (ptr);
-}
+//     while (mem_ptr->next != NULL)
+//     {
+//         if (mem_ptr->alloc_size >= size && mem_ptr->free_alloc >= 1)
+//         {
+//             struct s_alloc *alloc_ptr = mem_ptr->first_alloc;
+//             while (alloc_ptr->next != NULL)
+//             {
+//                 if (alloc_ptr->is_free == 1)
+//                 {
+//                     alloc_ptr->is_free = 0;
+//                     ptr = alloc_ptr->ptr;
+//                 }
+//                 alloc_ptr = alloc_ptr->next;
+//             }
+//         }
+//     }
+//     while (mem_ptr->prev != NULL){
+//         mem_ptr = mem_ptr->prev;
+//     }
+//     return (ptr);
+// }
 
 static void* create_new_mem_segment(size_t size)
 {
@@ -41,11 +41,17 @@ static void* create_new_mem_segment(size_t size)
     else
         size = size + MEM_METADATA_SIZE + ALLOC_METADATA_SIZE;
 
+    mem_ptr->next = (t_mem*) mmap(NULL, TINY_ALLOC_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    
+
+    if (mem_ptr->next == MAP_FAILED) {
+        write(1, "Error: mmap failed\n", 19);
+        return (NULL);
+    }
 
 
-    mem_ptr->ptr = mmap(NULL, TINY_ALLOC_SPACE, PROT_READ | PROT_WRITE, MAP_PRIVATE, -1, 0);
 
-    mem_ptr->
+    // mem_ptr->next->prev = mem_ptr;
 
     // while (mem_ptr->next != NULL){
     //     mem_ptr = mem_ptr->next;
