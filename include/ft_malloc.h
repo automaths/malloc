@@ -23,12 +23,10 @@ typedef struct s_alloc {
 } t_alloc;
 
 typedef struct s_mem {
-    void *ptr;
     struct s_alloc *first_alloc;
     struct s_mem *next;
     struct s_mem *prev;
     size_t alloc_size;
-    bool free_alloc;
 } t_mem;
 
 void    *malloc(size_t size);
@@ -36,6 +34,6 @@ void    free(void *ptr);
 void    *realloc(void *ptr, size_t size);
 size_t	ft_strlen(const char *str);
 void	ft_putnbr_fd(int n, int fd);
-void print_allocation_strat(void);
+void    print_allocation_strat(void);
 
 #endif
