@@ -19,14 +19,15 @@ typedef struct s_alloc {
     void *ptr;
     struct s_alloc *next;
     struct s_alloc *prev;
-    int is_free;
+    bool is_free;
+    size_t size;
 } t_alloc;
 
 typedef struct s_mem {
     struct s_alloc *first_alloc;
     struct s_mem *next;
     struct s_mem *prev;
-    size_t alloc_size;
+    size_t size;
 } t_mem;
 
 void    *malloc(size_t size);
@@ -35,5 +36,6 @@ void    *realloc(void *ptr, size_t size);
 size_t	ft_strlen(const char *str);
 void	ft_putnbr_fd(int n, int fd);
 void    print_allocation_strat(void);
+void    show_alloc_mem(void);
 
 #endif
