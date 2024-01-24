@@ -29,6 +29,16 @@ extern t_mem ft_data;
 //     return (ptr);
 // }
 
+// static unsigned long maxStackSize(void) {
+
+//     struct rlimit rlim;
+//     // Get the current stack size limit
+//     if (getrlimit(RLIMIT_STACK, &rlim) != 0)
+//         return 0;
+//     // return rlim.rlim_cur;
+//     return rlim.rlim_max;
+// }
+
 static void* create_new_mem_segment(size_t size)
 {
     t_mem *mem_ptr = &ft_data;
@@ -41,6 +51,7 @@ static void* create_new_mem_segment(size_t size)
         alloc_size = TINY_ALLOC_SIZE;
     }
     else if (size <= SMALL_ALLOC_SPACE) {
+        write(1, "coucou\n", 8);
         mem_size = SMALL_ZONE_SIZE;
         alloc_size = SMALL_ALLOC_SIZE;
     }
@@ -48,55 +59,62 @@ static void* create_new_mem_segment(size_t size)
         mem_size = size + MEM_METADATA_SIZE + ALLOC_METADATA_SIZE;
         alloc_size = size + ALLOC_METADATA_SIZE;
     }
-
-    while (mem_ptr->next != NULL)
+    while (mem_ptr->next != NULL) 
         mem_ptr = mem_ptr->next;
-    mem_ptr->next = (t_mem*) mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    mem_ptr->next = (t_mem*) (char*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (mem_ptr->next == MAP_FAILED)
         return (write(1, "Error: mmap failed\n", 19), NULL);
+
     mem_ptr->next->prev = mem_ptr;
-    mem_ptr = mem_ptr->next;    
+    mem_ptr = mem_ptr->next;
     mem_ptr->size = mem_size;
     mem_ptr->next = NULL;
 
     t_alloc* alloc_ptr = mem_ptr->first_alloc;
-    alloc_ptr = (t_alloc*) mem_ptr + MEM_METADATA_SIZE;
+    alloc_ptr = (t_alloc*)(mem_ptr + MEM_METADATA_SIZE);
     alloc_ptr->prev = NULL;
     alloc_ptr->next = NULL;
     alloc_ptr->ptr = alloc_ptr + ALLOC_METADATA_SIZE;
     alloc_ptr->is_free = true;
-    alloc_ptr->size = size;
+    alloc_ptr->size = alloc_size;
 
     ret_ptr = alloc_ptr->ptr;
     
-    print_allocation_strat();
-    write(1, "\n", 1);
-    write(1, "\n", 1);
-    write(1, "\n", 1);
+    // write(1, "\n", 1);
+    // write(1, "\n", 1);
+    // write(1, "\n", 1);
 
     int i = 0;
-    write(1, "alloc_size = ", 13);
-    ft_putnbr_fd(alloc_size, 1);
-    while (++i < 128)
+    int j = alloc_size;
+    // ft_putnbr_fd(alloc_size, 1);
+    while (++i < 126) // if 128, corruption warning at exec 
     {
-        write(1, "\n", 1);
-        write(1, "i = ", 4);
-        ft_putnbr_fd(i, 1);
-        write(1, "\n", 1); 
-        write(1, "alloc_ptr = ", 12);
-        ft_putnbr_fd(alloc_size, 1);
-        alloc_ptr->next = (t_alloc*) alloc_ptr + alloc_size;
-        write(1, "\n", 1);
-        write(1, "5", 1);
+        // write(1, "\n", 1);
+        // write(1, "i = ", 4);
+        // ft_putnbr_fd(i, 1);
+        // write(1, "\n", 1); 
+        j += alloc_size;
+        // write(1, "j = ", 4);
+        // ft_putnbr_fd(j, 1);
+        // write(1, "\n", 1);
+        // write(1, "mem_size = ", 11);
+        // ft_putnbr_fd(mem_size, 1);
+        alloc_ptr->next = (t_alloc*)((char*)alloc_ptr + alloc_size);
+        // write(1, "\n", 1); 
+        // write(1, "5", 1);
         alloc_ptr->next->prev = alloc_ptr;
-        write(1, "1", 1);
+        // write(1, "1", 1);
         alloc_ptr = alloc_ptr->next;
-        write(1, "2", 1);
-        alloc_ptr->ptr = alloc_ptr + ALLOC_METADATA_SIZE;
-        write(1, "3", 1);
+        // write(1, "2", 1);
+        alloc_ptr->ptr = ((char*)alloc_ptr + ALLOC_METADATA_SIZE);
+        // write(1, "3", 1);
         alloc_ptr->is_free = true;
-        write(1, "4", 1);
+        // write(1, "4", 1);
+        alloc_ptr->next = NULL;
     }
+    write(1, "\n", 1); 
+    write(1, "j = ", 4);
+    ft_putnbr_fd(j, 1);
     while (alloc_ptr->prev != NULL){
         alloc_ptr = alloc_ptr->prev;
     }

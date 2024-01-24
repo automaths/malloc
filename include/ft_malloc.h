@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <stdbool.h>
+#include <sys/resource.h>
 
 #define TINY_ZONE_SIZE getpagesize() * 8
 #define SMALL_ZONE_SIZE getpagesize() * 32
