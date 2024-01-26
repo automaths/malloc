@@ -14,7 +14,7 @@ void printVoidPointerAddressInHex(void *ptr) {
         *addressPtr++ = "0123456789abcdef"[(address >> ((sizeof(uintptr_t) * 2 - 1 - i) * 4)) & 0xF];
     }
     *addressPtr = '\0';
-    write(1, addressString, sizeof(addressString) - 1);
+    write(1, addressString, 7);
 }
 
 void print_allocation_strat(void) {
