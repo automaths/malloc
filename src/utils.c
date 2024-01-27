@@ -52,9 +52,16 @@ void show_alloc_mem(void) {
             write(1, "LARGE : ", 8);
         printVoidPointerAddressInHex((void*)mem_ptr);
 
-        // t_alloc *alloc_ptr = mem_ptr->first_alloc;
-        // while (alloc_ptr->next != NULL)
-        // {
+        t_alloc *alloc_ptr = mem_ptr->first_alloc;
+        (void)alloc_ptr;
+        // write(1, "coucou\n", 7);
+        if (alloc_ptr->prev == NULL)
+            write(1, "coucoa\n", 7);
+        if (alloc_ptr->next == NULL)
+            write(1, "coucou\n", 7);
+        while (alloc_ptr->next != NULL)
+        {
+            write(1, "coucou\n", 7);
         //     if (alloc_ptr->is_free == 0)
         //     {
         //         write(1, "\n", 1);
@@ -65,8 +72,9 @@ void show_alloc_mem(void) {
         //         ft_putnbr_fd(alloc_ptr->size, 1);
         //         write(1, " bytes", 7);
         //     }
-        //     alloc_ptr = alloc_ptr->next;
-        // }
+            write(1, "coucou\n", 7);
+            // alloc_ptr = alloc_ptr->next;
+        }
 
         mem_ptr = mem_ptr->next;
     }
