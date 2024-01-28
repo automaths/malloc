@@ -86,21 +86,39 @@ static void* create_new_mem_segment(size_t size)
     i += MEM_METADATA_SIZE;
 
     mem_ptr->first_alloc = (t_alloc*)((char*)(ptr + i));
+    i += ALLOC_METADATA_SIZE;
     t_alloc* alloc_ptr = mem_ptr->first_alloc;
     alloc_ptr->prev = NULL;
     alloc_ptr->next = NULL;
     alloc_ptr->is_free = true;
     alloc_ptr->size = alloc_size;
+    alloc_ptr->ptr = (void*)((char*)(ptr + i));
+    i += TINY_ALLOC_SPACE;
+    ret_ptr = alloc_ptr->ptr;
 
+    size_t j = 1;
+    while (i < mem_size) {
+        alloc_ptr->next = (t_alloc*)((char*)ptr + i);
+        i += ALLOC_METADATA_SIZE;
+        alloc_ptr->next->prev = alloc_ptr;
+        alloc_ptr = alloc_ptr->next;
+        alloc_ptr->is_free = true;
+        alloc_ptr->ptr = ((char*)ptr + i);
+        alloc_ptr->size = alloc_size;
+        alloc_ptr->next = NULL;
+        i += TINY_ALLOC_SPACE;
+        ++j;
+    }
+    write(1, "i: ", 3);
+    ft_putnbr_fd(i, 1);
+    write(1, "\n", 1);
+    write(1, "mem_size: ", 10);
+    ft_putnbr_fd(mem_size, 1);
+    write(1, "\n", 1);
+    write(1, "j: ", 3);
+    ft_putnbr_fd(j, 1);
+    write(1, "\n", 1);
 
-
-    // alloc_ptr->ptr = alloc_ptr + ALLOC_METADATA_SIZE;
-    // alloc_ptr->is_free = true;
-    // alloc_ptr->size = alloc_size;
-    // ret_ptr = alloc_ptr->ptr;
-
-    // int i = 0;
-    // int j = alloc_size;
     // while (++i < 126) // if 128, corruption warning at exec 
     // {
     //     j += alloc_size;
