@@ -1,7 +1,7 @@
 #include "ft_malloc.h"
 #include <stdio.h>
 
-extern t_mem ft_data;
+extern t_mem* ft_data;
 
 // static void* search_available_mem_segment(size_t size)
 // {
@@ -60,27 +60,34 @@ static size_t which_alloc_size(size_t size) {
 
 static void* create_new_mem_segment(size_t size)
 {
-    t_mem *mem_ptr = &ft_data;
     size_t i = 0;
     size_t mem_size = which_mem_size(size);
     size_t alloc_size = which_alloc_size(size);
+    (void)alloc_size;
 
-    if (mem_ptr->next == NULL) {
-        if (mem_ptr->next == MAP_FAILED)
-        mem_ptr->prev = NULL;
-    } else {
-        while (mem_ptr->next != NULL) 
-            mem_ptr = mem_ptr->next;
-        if (mem_ptr->next == MAP_FAILED)
-        mem_ptr->next->prev = mem_ptr;
-        mem_ptr = mem_ptr->next;
-    }
+    ft_data = (t_mem*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    t_mem *mem_ptr = ft_data;
+    if (mem_ptr->next == MAP_FAILED)
+        return(write(1, "MAP_FAILED\n", 11), NULL);
+    mem_ptr->prev = NULL;
+    // if (mem_ptr->next == NULL) {
+    // } else {
+    //     while (mem_ptr->next != NULL) 
+    //         mem_ptr = mem_ptr->next;
+    //     mem_ptr->next = (t_mem*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    //     if (mem_ptr->next == MAP_FAILED)
+    //         return(write(1, "MAP_FAILED\n", 11), NULL);
+    //     mem_ptr->next->prev = mem_ptr;
+    //     mem_ptr = mem_ptr->next;
+    // }
 
     mem_ptr->size = mem_size;
     mem_ptr->next = NULL;
     i += MEM_METADATA_SIZE;
 
     mem_ptr->first_alloc = (t_alloc*)((char*)(mem_ptr + i));
+    printVoidPointerAddressInHex((void*)mem_ptr, "mem_ptr 2 ");
+    printVoidPointerAddressInHex((void*)mem_ptr->first_alloc, "mem_ptr->first_alloc 2 ");
     i += ALLOC_METADATA_SIZE;
     t_alloc* alloc_ptr = mem_ptr->first_alloc;
     alloc_ptr->prev = NULL;
@@ -91,27 +98,37 @@ static void* create_new_mem_segment(size_t size)
     i += alloc_size - ALLOC_METADATA_SIZE;
     void* ret_ptr = alloc_ptr->ptr;
 
-    while ((i + alloc_size) < mem_size) {
-        printVoidPointerAddressInHex((void*)(mem_ptr + i), "loop ");
-        alloc_ptr->next = (t_alloc*)((char*)(mem_ptr + i));
-        i += ALLOC_METADATA_SIZE;
-        printVoidPointerAddressInHex((void*)(mem_ptr + i), "loop ");
-        alloc_ptr->next->prev = alloc_ptr;
-        alloc_ptr = alloc_ptr->next;
-        printVoidPointerAddressInHex((void*)(mem_ptr + i), "loop ");
-        alloc_ptr->is_free = true;
-        alloc_ptr->ptr = ((char*)(mem_ptr + i));
-        alloc_ptr->size = alloc_size;
-        alloc_ptr->next = NULL;
-        i += alloc_size - ALLOC_METADATA_SIZE;
-        printVoidPointerAddressInHex((void*)(mem_ptr + i), "loop ");
-    }
-    while (alloc_ptr->prev != NULL){
-        alloc_ptr = alloc_ptr->prev;
-    }
-    while (mem_ptr->prev != NULL){
-        mem_ptr = mem_ptr->prev;
-    }
+    show_alloc_mem();
+
+    // while ((i + alloc_size) < mem_size) {
+    //     printVoidPointerAddressInHex((void*)(mem_ptr + i), "loop ");
+    //     alloc_ptr->next = (t_alloc*)((char*)(mem_ptr + i));
+    //     if (alloc_ptr->next == NULL)
+    //         write(1, "alloc_ptr->next == NULL\n", 24);
+    //     i += ALLOC_METADATA_SIZE;
+    //     printVoidPointerAddressInHex((void*)(mem_ptr + i), "loop2 ");
+    //     write(1, "i: ", 3);
+    //     ft_putnbr_fd(i, 1);
+    //     write(1, "\n", 1);
+    //     write(1, "mem_size: ", 10);
+    //     ft_putnbr_fd(mem_size, 1);
+    //     write(1, "\n", 1);
+    //     alloc_ptr->next->prev = alloc_ptr;
+    //     printVoidPointerAddressInHex((void*)(mem_ptr + i), "loop ");
+    //     alloc_ptr = alloc_ptr->next;
+    //     alloc_ptr->is_free = true;
+    //     alloc_ptr->ptr = ((char*)(mem_ptr + i));
+    //     alloc_ptr->size = alloc_size;
+    //     alloc_ptr->next = NULL;
+    //     i += alloc_size - ALLOC_METADATA_SIZE;
+    //     printVoidPointerAddressInHex((void*)(mem_ptr + i), "loop ");
+    // }
+    // while (alloc_ptr->prev != NULL){
+    //     alloc_ptr = alloc_ptr->prev;
+    // }
+    // while (mem_ptr->prev != NULL){
+    //     mem_ptr = mem_ptr->prev;
+    // }
     return (ret_ptr);
 }
 

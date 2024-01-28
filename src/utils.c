@@ -1,7 +1,7 @@
 #include "ft_malloc.h"
 #include <stdint.h>
 
-extern t_mem ft_data;
+extern t_mem* ft_data;
 
 void printVoidPointerAddressInHex(void *ptr, char *debug) {
     // uintptr_t address = (uintptr_t)ptr;
@@ -43,18 +43,20 @@ void print_allocation_strat(void) {
 
 void show_alloc_mem(void) {
 
-    t_mem *mem_ptr = &ft_data;
+    t_mem *mem_ptr = ft_data;
 
     while (mem_ptr != NULL)
     {
-        // if ((int)mem_ptr->size <= TINY_ZONE_SIZE)
-        //     write(1, "TINY : ", 7);
-        // else if ((int)mem_ptr->size <= SMALL_ZONE_SIZE)
-        //     write(1, "SMALL : ", 8);
-        // else
-        //     write(1, "LARGE : ", 8);
+        if ((int)mem_ptr->size <= TINY_ZONE_SIZE)
+            write(1, "TINY : ", 7);
+        else if ((int)mem_ptr->size <= SMALL_ZONE_SIZE)
+            write(1, "SMALL : ", 8);
+        else
+            write(1, "LARGE : ", 8);
 
+        printVoidPointerAddressInHex((void*)mem_ptr, "mem_ptr ");
         t_alloc *alloc_ptr = mem_ptr->first_alloc;
+        printVoidPointerAddressInHex((void*)alloc_ptr, "mem_ptr->first_alloc ");
         while (alloc_ptr->next != NULL)
         {
             if (alloc_ptr->is_free == true)
