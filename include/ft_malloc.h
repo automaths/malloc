@@ -38,5 +38,6 @@ size_t	ft_strlen(const char *str);
 void	ft_putnbr_fd(int n, int fd);
 void    print_allocation_strat(void);
 void    show_alloc_mem(void);
+void    printVoidPointerAddressInHex(void *ptr);
 
 #endif
