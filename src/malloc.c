@@ -64,10 +64,8 @@ static void* create_new_mem_segment(size_t size)
     size_t i = 0;
     size_t mem_size = which_mem_size(size);
     size_t alloc_size = which_alloc_size(size);
-    (void)alloc_size;
  
     if (ft_data == NULL) {
-        // write(1, "ft_data == NULL\n", 16);
         ft_data = (t_mem*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         if (ft_data->next == MAP_FAILED)
             return(write(1, "MAP_FAILED\n", 11), NULL);
@@ -75,7 +73,6 @@ static void* create_new_mem_segment(size_t size)
         ft_data->size = mem_size;
         ft_data->next = NULL;
     } else {
-        // write(1, "ft_data != ELSE\n", 16);
         while (ft_data->next != NULL) {
             ft_data = ft_data->next;
         }
@@ -92,13 +89,14 @@ static void* create_new_mem_segment(size_t size)
     i += MEM_METADATA_SIZE;
     t_mem *mem_ptr = ft_data;
 
-    mem_ptr->first_alloc = (t_alloc*)((char*)(mem_ptr + i));
+    mem_ptr->first_alloc = (t_alloc*)((char*)mem_ptr + i);
     i += ALLOC_METADATA_SIZE;
     t_alloc* alloc_ptr = mem_ptr->first_alloc;
     alloc_ptr->prev = NULL;
     alloc_ptr->next = NULL;
     alloc_ptr->is_free = true;
     alloc_ptr->size = alloc_size;
+    alloc_ptr->allocated_size = size;
     alloc_ptr->ptr = (void*)((char*)(mem_ptr + i));
     i += alloc_size - ALLOC_METADATA_SIZE;
     void* ret_ptr = alloc_ptr->ptr;
@@ -133,7 +131,7 @@ void *malloc(size_t size)
     if (ptr == NULL){
         ptr = create_new_mem_segment(size);
     }
-    // show_alloc_mem();
+    show_alloc_mem();
 
     return (NULL);
 }
