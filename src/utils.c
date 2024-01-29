@@ -54,9 +54,7 @@ void show_alloc_mem(void) {
         else
             write(1, "LARGE : ", 8);
 
-        printVoidPointerAddressInHex((void*)mem_ptr, "mem_ptr ");
         t_alloc *alloc_ptr = mem_ptr->first_alloc;
-        printVoidPointerAddressInHex((void*)alloc_ptr, "mem_ptr->first_alloc ");
         while (alloc_ptr->next != NULL)
         {
             if (alloc_ptr->is_free == true)
