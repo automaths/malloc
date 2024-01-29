@@ -5,6 +5,10 @@ t_mem* ft_data;
 int main()
 {
     void *ptr = malloc(500);
+    ptr = malloc(500);
+    ptr = malloc(500);
+    ptr = malloc(500);
+    ptr = malloc(500);
     if (0) {
         ptr = realloc(ptr, 20);
         free(ptr);
