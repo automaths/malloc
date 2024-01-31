@@ -9,6 +9,7 @@ SRCS        := 	main.c \
 				utils.c \
 				libft/ft_strlen.c \
 				libft/ft_putnbr_fd.c \
+				libft/ft_memcpy.c \
 
 SRCS        := $(SRCS:%=$(SRC_DIR)/%)
 OBJS        := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

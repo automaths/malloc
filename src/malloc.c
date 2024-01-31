@@ -3,32 +3,41 @@
 
 extern t_mem* ft_data;
 
-// static void* search_available_mem_segment(size_t size)
-// {
-//     t_mem *mem_ptr = &ft_data;
-//     void *ptr = NULL;
+static void* search_available_mem_segment(size_t size)
+{
+    t_mem *mem_ptr = ft_data;
+    void *ptr = NULL;
 
-//     while (mem_ptr->next != NULL)
-//     {
-//         if (mem_ptr->mem_size >= size && mem_ptr->free_alloc >= 1)
-//         {
-//             struct s_alloc *alloc_ptr = mem_ptr->first_alloc;
-//             while (alloc_ptr->next != NULL)
-//             {
-//                 if (alloc_ptr->is_free == 1)
-//                 {
-//                     alloc_ptr->is_free = 0;
-//                     ptr = alloc_ptr->ptr;
-//                 }
-//                 alloc_ptr = alloc_ptr->next;
-//             }
-//         }
-//     }
-//     while (mem_ptr->prev != NULL){
-//         mem_ptr = mem_ptr->prev;
-//     }
-//     return (ptr);
-// }
+    if (mem_ptr == NULL)
+        return (NULL);
+    while (mem_ptr != NULL && ptr == NULL)
+    {
+        if (mem_ptr->first_alloc->size >= size)
+        {
+            struct s_alloc *alloc_ptr = mem_ptr->first_alloc;
+            while (alloc_ptr->next != NULL)
+            {
+                if (ptr == NULL && alloc_ptr->is_free == true)
+                {
+                    alloc_ptr->is_free = false;
+                    alloc_ptr->allocated_size = size;
+                    ptr = alloc_ptr->ptr;
+                    mem_ptr->used_allocations++;
+                }
+                alloc_ptr = alloc_ptr->next;
+            }
+            while (alloc_ptr->prev != NULL)
+                alloc_ptr = alloc_ptr->prev;
+        }
+        if (mem_ptr->next == NULL)
+            break;
+        mem_ptr = mem_ptr->next;
+    }
+    while (mem_ptr->prev != NULL){
+        mem_ptr = mem_ptr->prev;
+    }
+    return (ptr);
+}
 
 // static unsigned long maxStackSize(void) {
 
@@ -94,14 +103,13 @@ static void* create_new_mem_segment(size_t size)
     t_alloc* alloc_ptr = mem_ptr->first_alloc;
     alloc_ptr->prev = NULL;
     alloc_ptr->next = NULL;
-    alloc_ptr->is_free = true;
-    alloc_ptr->size = alloc_size;
+    alloc_ptr->is_free = false;
+    alloc_ptr->size = alloc_size - ALLOC_METADATA_SIZE;
     alloc_ptr->allocated_size = size;
     alloc_ptr->ptr = (void*)((char*)(mem_ptr + i));
     i += alloc_size - ALLOC_METADATA_SIZE;
     void* ret_ptr = alloc_ptr->ptr;
 
-    size_t j = 0;
     while ((i + alloc_size) < mem_size) {
         alloc_ptr->next = (t_alloc*)((char*)mem_ptr + i);
         i += ALLOC_METADATA_SIZE;
@@ -109,11 +117,12 @@ static void* create_new_mem_segment(size_t size)
         alloc_ptr = alloc_ptr->next;
         alloc_ptr->is_free = true;
         alloc_ptr->ptr = ((char*)(mem_ptr + i));
-        alloc_ptr->size = alloc_size;
+        alloc_ptr->size = alloc_size - ALLOC_METADATA_SIZE;
         alloc_ptr->next = NULL;
         i += alloc_size - ALLOC_METADATA_SIZE;
-        j++;
     }
+    mem_ptr->used_allocations = 1;
+
     while (alloc_ptr->prev != NULL){
         alloc_ptr = alloc_ptr->prev;
     }
@@ -127,12 +136,11 @@ void *malloc(size_t size)
 {
     void *ptr = NULL;
 
-    // ptr = search_available_mem_segment(size);
+    ptr = search_available_mem_segment(size);
     if (ptr == NULL){
+        write(1, "create_new_mem_segment\n", 23);
         ptr = create_new_mem_segment(size);
     }
-    show_alloc_mem();
-
-    return (NULL);
+    return (ptr);
 }
 

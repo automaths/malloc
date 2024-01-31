@@ -30,15 +30,18 @@ typedef struct s_mem {
     struct s_mem *next;
     struct s_mem *prev;
     size_t size;
+    size_t used_allocations;
 } t_mem;
 
-void    *malloc(size_t size);
-void    free(void *ptr);
-void    *realloc(void *ptr, size_t size);
-size_t	ft_strlen(const char *str);
-void	ft_putnbr_fd(int n, int fd);
-void    print_allocation_strat(void);
-void    show_alloc_mem(void);
-void    printVoidPointerAddressInHex(void *ptr, char *debug);
+void        *malloc(size_t size);
+void        free(void *ptr);
+void        *realloc(void *ptr, size_t size);
+size_t	    ft_strlen(const char *str);
+void	    ft_putnbr_fd(int n, int fd);
+void        print_allocation_strat(void);
+void        show_alloc_mem(void);
+void        printVoidPointerAddressInHex(void *ptr, char *debug);
+t_alloc*    find_ptr_meta(void *ptr);
+void*       ft_memcpy(void *dest, const void *src, size_t len);
 
 #endif

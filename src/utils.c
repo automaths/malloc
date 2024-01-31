@@ -4,21 +4,22 @@
 extern t_mem* ft_data;
 
 void printVoidPointerAddressInHex(void *ptr, char *debug) {
-    // uintptr_t address = (uintptr_t)ptr;
-    // char addressString[20];
-    // char *addressPtr = addressString;
+    uintptr_t address = (uintptr_t)ptr;
+    char addressString[20];
+    char *addressPtr = addressString;
 
-    // *addressPtr++ = '0';
-    // *addressPtr++ = 'x';
-    // for (size_t i = 0; i < 5; ++i) {
-    //     *addressPtr++ = "0123456789abcdef"[(address >> ((sizeof(uintptr_t) * 2 - 1 - i) * 4)) & 0xF];
-    // }
-    // *addressPtr = '\0';
-    // write(1, addressString, 7);
-    char buffer[20];
-    snprintf(buffer, sizeof(buffer), "%p", ptr);
-    write(1, debug, ft_strlen(debug));
-    write(1, buffer, ft_strlen(buffer));
+    *addressPtr++ = '0';
+    *addressPtr++ = 'x';
+    for (size_t i = 10; i < 15; ++i) {
+        *addressPtr++ = "0123456789ABCDEF"[(address >> ((sizeof(uintptr_t) * 2 - 1 - i) * 4)) & 0xF];
+    }
+    *addressPtr = '\0';
+    write(1, addressString, 7);
+    (void)debug;
+    // char buffer[20];
+    // snprintf(buffer, sizeof(buffer), "%p", ptr);
+    // write(1, debug, ft_strlen(debug));
+    // write(1, buffer, ft_strlen(buffer));
 }
 
 void print_allocation_strat(void) {
@@ -41,15 +42,45 @@ void print_allocation_strat(void) {
     ft_putnbr_fd(SMALL_ALLOC_SPACE, 1);
 }
 
+t_alloc* find_ptr_meta(void *ptr) {
+
+    t_mem *mem_ptr = ft_data;
+    void *ret_ptr = NULL;
+    bool found = false;
+
+    while (mem_ptr != NULL) {
+
+        t_alloc *alloc_ptr = mem_ptr->first_alloc;
+        while (alloc_ptr != NULL) {
+            if (alloc_ptr->ptr == ptr) {
+                ret_ptr = alloc_ptr->ptr;
+                break;
+            }
+            if (alloc_ptr->next == NULL)
+                break;
+            alloc_ptr = alloc_ptr->next;
+        }
+        while (alloc_ptr->prev != NULL)
+            alloc_ptr = alloc_ptr->prev;
+        if (found == true || mem_ptr->next == NULL)
+            break;
+        mem_ptr = mem_ptr->next;
+    }
+    mem_ptr = ft_data;
+    return (ret_ptr);
+}
+
+
 void show_alloc_mem(void) {
 
     t_mem *mem_ptr = ft_data;
+    size_t total = 0;
 
     while (mem_ptr != NULL)
     {
-        if ((int)mem_ptr->size <= TINY_ZONE_SIZE)
+        if (mem_ptr->first_alloc->size <= TINY_ALLOC_SIZE)
             write(1, "TINY : ", 7);
-        else if ((int)mem_ptr->size <= SMALL_ZONE_SIZE)
+        else if (mem_ptr->first_alloc->size <= SMALL_ALLOC_SIZE)
             write(1, "SMALL : ", 8);
         else
             write(1, "LARGE : ", 8);
@@ -57,7 +88,7 @@ void show_alloc_mem(void) {
         write(1, "\n", 1);
 
         t_alloc *alloc_ptr = mem_ptr->first_alloc;
-        while (alloc_ptr->next != NULL)
+        while (alloc_ptr != NULL)
         {
             if (alloc_ptr->is_free == false)
             {
@@ -65,10 +96,13 @@ void show_alloc_mem(void) {
                 write(1, " - ", 3);
                 printVoidPointerAddressInHex((void*)((char*)alloc_ptr->ptr + alloc_ptr->size), "");
                 write(1, " : ", 3);
-                ft_putnbr_fd(alloc_ptr->size, 1);
+                ft_putnbr_fd(alloc_ptr->allocated_size, 1);
+                total += alloc_ptr->allocated_size;
                 write(1, " bytes", 7);
                 write(1, "\n", 1);
             }
+            if (alloc_ptr->next == NULL)
+                break;
             alloc_ptr = alloc_ptr->next;
         }
 
@@ -78,7 +112,11 @@ void show_alloc_mem(void) {
             break;
         mem_ptr = mem_ptr->next;
     }
-    while (mem_ptr->prev != NULL)
+    write(1, "Total : ", 8);
+    ft_putnbr_fd(total, 1);
+    write(1, " bytes\n", 7);
+
+    while (mem_ptr != NULL && mem_ptr->prev != NULL)
         mem_ptr = mem_ptr->prev;
 }
 
