@@ -24,13 +24,16 @@ DIR_DUP     = mkdir -p $(@D)
 
 all: $(NAME)
 
+lib: $(OBJS)
+		gcc -shared -g -fPIC $(CFLAGS) $(CPPFLAGS) -o libft_malloc_x86_64.so $(SRCS)
+
 $(NAME): $(OBJS)
-		$(CC) $(OBJS) -o $(NAME)
+		$(CC) $(OBJS) -g -o $(NAME)
 		$(info CREATED $(NAME))
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 		$(DIR_DUP)
-		$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+		$(CC) $(CFLAGS) $(CPPFLAGS) -g -c -o $@ $<
 		$(info CREATED $@)
 
 clean:
