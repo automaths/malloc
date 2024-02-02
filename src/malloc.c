@@ -1,5 +1,6 @@
 #include "ft_malloc.h"
 #include <stdio.h>
+#include <stdint.h>
 
 extern t_mem* ft_data;
 
@@ -104,10 +105,10 @@ static void* create_new_mem_segment(size_t size)
     alloc_ptr->prev = NULL;
     alloc_ptr->next = NULL;
     alloc_ptr->is_free = false;
-    alloc_ptr->size = alloc_size - ALLOC_METADATA_SIZE;
+    alloc_ptr->size = alloc_size - ALLOC_METADATA_SIZE + 15;
     alloc_ptr->allocated_size = size;
-    alloc_ptr->ptr = (void*)((char*)(mem_ptr + i));
-    i += alloc_size - ALLOC_METADATA_SIZE;
+    alloc_ptr->ptr = (void*)(((uintptr_t)(mem_ptr + i) + 15) & ~ (uintptr_t)0x0F);
+    i += alloc_size - ALLOC_METADATA_SIZE + 15;
     void* ret_ptr = alloc_ptr->ptr;
 
     while ((i + alloc_size) < mem_size) {
@@ -116,10 +117,10 @@ static void* create_new_mem_segment(size_t size)
         alloc_ptr->next->prev = alloc_ptr;
         alloc_ptr = alloc_ptr->next;
         alloc_ptr->is_free = true;
-        alloc_ptr->ptr = ((char*)(mem_ptr + i));
-        alloc_ptr->size = alloc_size - ALLOC_METADATA_SIZE;
+        alloc_ptr->ptr = (void*)(((uintptr_t)(mem_ptr + i) + 15) & ~ (uintptr_t)0x0F);
+        alloc_ptr->size = alloc_size - ALLOC_METADATA_SIZE - 15;
         alloc_ptr->next = NULL;
-        i += alloc_size - ALLOC_METADATA_SIZE;
+        i += alloc_size - ALLOC_METADATA_SIZE + 15;
     }
     mem_ptr->used_allocations = 1;
 
