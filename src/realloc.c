@@ -11,9 +11,7 @@ void *realloc(void *ptr, size_t size)
     if (ptr_metadata == NULL)
         return (NULL);
     ft_memcpy(ret_ptr, ptr, cp_size);
-    write(1, "memcpy\n", 7);
     free(ptr);
-    write(1, "free\n", 5);
 
     return (ret_ptr);
 }

@@ -40,19 +40,21 @@ static void* search_available_mem_segment(size_t size)
     return (ptr);
 }
 
-// static unsigned long maxStackSize(void) {
+static size_t maxStackSize(void) {
 
-//     struct rlimit rlim;
-//     // Get the current stack size limit
-//     if (getrlimit(RLIMIT_STACK, &rlim) != 0)
-//         return 0;
-//     // return rlim.rlim_cur;
-
-//     return rlim.rlim_max;
-// }
+    struct rlimit rlim;
+    if (getrlimit(RLIMIT_STACK, &rlim) != 0)
+        return 0;
+    return rlim.rlim_cur;
+}
 
 static size_t which_mem_size(size_t size) {
 
+    size_t max_stack_size = maxStackSize();
+    if (max_stack_size < (MEM_METADATA_SIZE + ALLOC_METADATA_SIZE + 15))
+        return 0;
+    if (max_stack_size < (TINY_ZONE_SIZE + MEM_METADATA_SIZE + ALLOC_METADATA_SIZE + 15))
+        return 1;
     if (size <= TINY_ALLOC_SPACE)
         return TINY_ZONE_SIZE;
     if (size <= SMALL_ALLOC_SPACE)
@@ -73,7 +75,15 @@ static void* create_new_mem_segment(size_t size)
 {
     size_t i = 0;
     size_t mem_size = which_mem_size(size);
-    size_t alloc_size = which_alloc_size(size);
+    size_t alloc_size;
+    if (mem_size == 0)
+        return NULL;
+    else if (mem_size == 1) {
+        mem_size = size;    
+        alloc_size = maxStackSize() - MEM_METADATA_SIZE - ALLOC_METADATA_SIZE;
+    }
+    else
+        alloc_size = which_alloc_size(size);
  
     if (ft_data == NULL) {
         ft_data = (t_mem*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);

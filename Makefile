@@ -1,9 +1,12 @@
-NAME        :=	ft_malloc
+ifeq ($(HOSTTYPE),)
+HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
+
+NAME        :=	libft_malloc_${HOSTTYPE}.so
 
 SRC_DIR     := 	src
 OBJ_DIR     := 	obj
-SRCS        := 	main.c \
-				malloc.c \
+SRCS        := 	malloc.c \
 				realloc.c \
 				free.c \
 				utils.c \
@@ -16,7 +19,7 @@ OBJS        := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CC          := gcc
 CFLAGS      := -Wall -Wextra -Werror
-CPPFLAGS    := -I include
+INCLUDE    := -I include
 
 RM          := rm -f
 MAKEFLAGS   += --no-print-directory
@@ -24,16 +27,14 @@ DIR_DUP     = mkdir -p $(@D)
 
 all: $(NAME)
 
-lib: $(OBJS)
-		gcc -shared -g -fPIC $(CFLAGS) $(CPPFLAGS) -o libft_malloc_x86_64.so $(SRCS)
-
 $(NAME): $(OBJS)
-		$(CC) $(OBJS) -g -o $(NAME)
+		$(CC) -shared -g -fPIC $(CFLAGS) $(INCLUDE) -o $(NAME) $(SRCS)
+		ln -sf $(NAME) libft_malloc.so
 		$(info CREATED $(NAME))
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 		$(DIR_DUP)
-		$(CC) $(CFLAGS) $(CPPFLAGS) -g -c -o $@ $<
+		$(CC) $(CFLAGS) $(INCLUDE) -g -c -o $@ $<
 		$(info CREATED $@)
 
 clean:
