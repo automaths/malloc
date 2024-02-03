@@ -21,7 +21,7 @@ CC          := gcc
 CFLAGS      := -Wall -Wextra -Werror
 INCLUDE    := -I include
 
-RM          := rm -f
+RM          := rm -rf
 MAKEFLAGS   += --no-print-directory
 DIR_DUP     = mkdir -p $(@D)
 
@@ -41,7 +41,7 @@ clean:
 		$(RM) $(OBJS)
 
 fclean: clean
-		$(RM) $(NAME)
+		$(RM) $(NAME) libft_malloc.so obj
 
 re:
 		$(MAKE) fclean
