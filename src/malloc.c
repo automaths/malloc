@@ -88,7 +88,7 @@ static void* create_new_mem_segment(size_t size)
     if (ft_data == NULL) {
         ft_data = (t_mem*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         if (ft_data->next == MAP_FAILED)
-            return(write(1, "MAP_FAILED\n", 11), NULL);
+            return(NULL);
         ft_data->prev = NULL;
         ft_data->size = mem_size;
         ft_data->next = NULL;
@@ -98,7 +98,7 @@ static void* create_new_mem_segment(size_t size)
         }
         ft_data->next = (t_mem*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         if (ft_data->next == MAP_FAILED)
-            return(write(1, "MAP_FAILED\n", 11), NULL);
+            return(NULL);
         t_mem* mem_tmp = ft_data;
         ft_data = ft_data->next;
         ft_data->prev = mem_tmp;
@@ -149,7 +149,6 @@ void *malloc(size_t size)
 
     ptr = search_available_mem_segment(size);
     if (ptr == NULL){
-        write(1, "create_new_mem_segment\n", 23);
         ptr = create_new_mem_segment(size);
     }
     return (ptr);

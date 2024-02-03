@@ -13,7 +13,7 @@ int main()
     free(ptr);
     ptr = realloc(ptr, 500);
     show_alloc_mem();
-    printAllocationStrat();
+    // printAllocationStrat();
 
     return (0);
 }
