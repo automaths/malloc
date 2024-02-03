@@ -22,7 +22,7 @@ void printVoidPointerAddressInHex(void *ptr, char *debug) {
     // write(1, buffer, ft_strlen(buffer));
 }
 
-void print_allocation_strat(void) {
+void printAllocationStrat(void) {
 
     write(1, "\nTINY_ZONE_SIZE\n", 16);
     ft_putnbr_fd(TINY_ZONE_SIZE, 1);

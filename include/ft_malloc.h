@@ -38,7 +38,7 @@ void        free(void *ptr);
 void        *realloc(void *ptr, size_t size);
 size_t	    ft_strlen(const char *str);
 void	    ft_putnbr_fd(int n, int fd);
-void        print_allocation_strat(void);
+void        printAllocationStrat(void);
 void        show_alloc_mem(void);
 void        printVoidPointerAddressInHex(void *ptr, char *debug);
 t_alloc*    find_ptr_meta(void *ptr);

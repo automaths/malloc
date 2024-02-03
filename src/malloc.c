@@ -51,9 +51,9 @@ static size_t maxStackSize(void) {
 static size_t which_mem_size(size_t size) {
 
     size_t max_stack_size = maxStackSize();
-    if (max_stack_size < (MEM_METADATA_SIZE + ALLOC_METADATA_SIZE + 15))
+    if ((max_stack_size < (MEM_METADATA_SIZE + ALLOC_METADATA_SIZE + 15)) || (size == 0))
         return 0;
-    if (max_stack_size < (TINY_ZONE_SIZE + MEM_METADATA_SIZE + ALLOC_METADATA_SIZE + 15))
+    if ((max_stack_size < (TINY_ZONE_SIZE + MEM_METADATA_SIZE + ALLOC_METADATA_SIZE + 15)))
         return 1;
     if (size <= TINY_ALLOC_SPACE)
         return TINY_ZONE_SIZE;

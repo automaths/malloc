@@ -7,6 +7,8 @@ void free(void *ptr)
     t_mem *mem_ptr = ft_data;
     bool found = false;
 
+    if (ptr == NULL)
+        return;
     while (mem_ptr != NULL) {
 
         t_alloc *alloc_ptr = mem_ptr->first_alloc;
