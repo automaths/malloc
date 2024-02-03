@@ -43,5 +43,6 @@ void        show_alloc_mem(void);
 void        printVoidPointerAddressInHex(void *ptr, char *debug);
 t_alloc*    find_ptr_meta(void *ptr);
 void*       ft_memcpy(void *dest, const void *src, size_t len);
+size_t      maxStackSize(void);
 
 #endif

@@ -40,14 +40,6 @@ static void* search_available_mem_segment(size_t size)
     return (ptr);
 }
 
-static size_t maxStackSize(void) {
-
-    struct rlimit rlim;
-    if (getrlimit(RLIMIT_STACK, &rlim) != 0)
-        return 0;
-    return rlim.rlim_cur;
-}
-
 static size_t which_mem_size(size_t size) {
 
     size_t max_stack_size = maxStackSize();
@@ -147,6 +139,9 @@ void *malloc(size_t size)
 {
     void *ptr = NULL;
 
+    size_t max_stack_size = maxStackSize();
+    if (size > max_stack_size)
+        size = max_stack_size;
     ptr = search_available_mem_segment(size);
     if (ptr == NULL){
         ptr = create_new_mem_segment(size);

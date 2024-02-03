@@ -3,6 +3,14 @@
 
 extern t_mem* ft_data;
 
+size_t maxStackSize(void) {
+
+    struct rlimit rlim;
+    if (getrlimit(RLIMIT_STACK, &rlim) != 0)
+        return 0;
+    return rlim.rlim_cur;
+}
+
 void printVoidPointerAddressInHex(void *ptr, char *debug) {
     uintptr_t address = (uintptr_t)ptr;
     char addressString[20];
