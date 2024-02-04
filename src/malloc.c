@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-extern t_mem* ft_data;
+t_mem* ft_data;
 
 static void* search_available_mem_segment(size_t size)
 {
