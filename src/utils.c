@@ -8,7 +8,8 @@ size_t maxStackSize(void) {
     struct rlimit rlim;
     if (getrlimit(RLIMIT_STACK, &rlim) != 0)
         return 0;
-    return rlim.rlim_cur;
+    // return rlim.rlim_cur;
+    return rlim.rlim_max;
 }
 
 void printVoidPointerAddressInHex(void *ptr, char *debug) {
@@ -53,7 +54,6 @@ void printAllocationStrat(void) {
 t_alloc* find_ptr_meta(void *ptr) {
 
     t_mem *mem_ptr = ft_data;
-    void *ret_ptr = NULL;
     bool found = false;
 
     while (mem_ptr != NULL) {
@@ -61,21 +61,27 @@ t_alloc* find_ptr_meta(void *ptr) {
         t_alloc *alloc_ptr = mem_ptr->first_alloc;
         while (alloc_ptr != NULL) {
             if (alloc_ptr->ptr == ptr) {
-                ret_ptr = alloc_ptr->ptr;
+                found = true;
                 break;
             }
             if (alloc_ptr->next == NULL)
                 break;
             alloc_ptr = alloc_ptr->next;
         }
+        if (found == true) {
+            t_alloc *ret_ptr = alloc_ptr;
+            while (alloc_ptr->prev != NULL)
+                alloc_ptr = alloc_ptr->prev;
+            return (ret_ptr);
+        }
         while (alloc_ptr->prev != NULL)
             alloc_ptr = alloc_ptr->prev;
-        if (found == true || mem_ptr->next == NULL)
+        if (mem_ptr->next == NULL)
             break;
         mem_ptr = mem_ptr->next;
     }
     mem_ptr = ft_data;
-    return (ret_ptr);
+    return (NULL);
 }
 
 
