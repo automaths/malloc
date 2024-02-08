@@ -78,7 +78,10 @@ static void* create_new_mem_segment(size_t size)
         alloc_size = which_alloc_size(size);
  
     if (ft_data == NULL) {
+        write(1, "first malloc ", 13);
         ft_data = (t_mem*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        printVoidPointerAddressInHex((void*)ft_data, "ft_data");
+        write(1, "\n", 1);
         if (ft_data->next == MAP_FAILED)
             return(NULL);
         ft_data->prev = NULL;
@@ -146,6 +149,7 @@ void *malloc(size_t size)
     if (ptr == NULL){
         ptr = create_new_mem_segment(size);
     }
+    // show_alloc_mem();
     return (ptr);
 }
 
