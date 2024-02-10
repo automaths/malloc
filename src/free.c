@@ -62,7 +62,6 @@ void free(void *ptr)
             write(1, "the size is not a multiple of pagesize\n", 40);
             mem_ptr->size = mem_ptr->size - test;
         }
-        write(1, "munmap\n", 7);
         // int ret = munmap(mem_ptr, mem_ptr->size);
         if (munmap(mem_ptr, mem_ptr->size) != 0)
             write(1, "munmap failed\n", 14);
