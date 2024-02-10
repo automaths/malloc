@@ -4,6 +4,15 @@
 
 t_mem* ft_data;
 
+void	ft_bzero(void *s, size_t n)
+{
+	char *str;
+
+	str = (char *)s;
+	while (n--)
+		str[n] = 0;
+} 
+
 static void* search_available_mem_segment(size_t size)
 {
     t_mem *mem_ptr = ft_data;
@@ -80,6 +89,7 @@ static void* create_new_mem_segment(size_t size)
     if (ft_data == NULL) {
         write(1, "first malloc ", 13);
         ft_data = (t_mem*)mmap(NULL, mem_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        ft_bzero(ft_data, MEM_METADATA_SIZE);
         printVoidPointerAddressInHex((void*)ft_data, "ft_data");
         write(1, "\n", 1);
         if (ft_data->next == MAP_FAILED)
@@ -113,6 +123,7 @@ static void* create_new_mem_segment(size_t size)
     alloc_ptr->size = alloc_size - ALLOC_METADATA_SIZE + 15;
     alloc_ptr->allocated_size = size;
     alloc_ptr->ptr = (void*)(((uintptr_t)(mem_ptr + i) + 15) & ~ (uintptr_t)0x0F);
+    // ft_bzero(alloc_ptr->ptr, ALLOC_METADATA_SIZE);
     i += alloc_size - ALLOC_METADATA_SIZE + 15;
     void* ret_ptr = alloc_ptr->ptr;
 
@@ -123,6 +134,7 @@ static void* create_new_mem_segment(size_t size)
         alloc_ptr = alloc_ptr->next;
         alloc_ptr->is_free = true;
         alloc_ptr->ptr = (void*)(((uintptr_t)(mem_ptr + i) + 15) & ~ (uintptr_t)0x0F);
+        // ft_bzero(alloc_ptr->ptr, ALLOC_METADATA_SIZE);
         alloc_ptr->size = alloc_size - ALLOC_METADATA_SIZE - 15;
         alloc_ptr->next = NULL;
         i += alloc_size - ALLOC_METADATA_SIZE + 15;
