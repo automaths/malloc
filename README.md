@@ -1,2 +1,2 @@
-# ft_nm
-Reimplement nm 
+# malloc
+Reimplement malloc 
