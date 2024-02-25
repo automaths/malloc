@@ -1,4 +1,6 @@
 #include "ft_malloc.h"
+#include <string.h>
+#include <errno.h>
 
 extern t_mem* ft_data;
 
@@ -7,9 +9,6 @@ void free(void *ptr)
     t_mem *mem_ptr = ft_data;
     bool found = false;
 
-    write(1, "the pointer given is: ", 23);
-    printVoidPointerAddressInHex(ptr, "");
-    write(1, "\n", 1);
 
     if (ptr == NULL)
         return;
@@ -35,9 +34,6 @@ void free(void *ptr)
     }
 
     if (mem_ptr->used_allocations <= 0) {
-        write(1, "the pointer before reorga is ", 29);
-        printVoidPointerAddressInHex((void*)mem_ptr, "");
-        write(1, "\n", 1);
         if (mem_ptr->prev != NULL && mem_ptr->next != NULL) {
             mem_ptr->prev->next = mem_ptr->next;
             mem_ptr->next->prev = mem_ptr->prev;
@@ -48,23 +44,14 @@ void free(void *ptr)
             mem_ptr->prev->next = NULL;
         }
         else {
-            write(1, "freeing the last pointer\n", 25);
-            ft_data = NULL;
-        }
-        write(1, "the pointer that is free is", 27);
-        printVoidPointerAddressInHex((void*)mem_ptr, "");
-        write(1, "\n", 1);
-        ft_putnbr_fd(mem_ptr->size, 1);
-        write(1, "\n", 1);
-        write(1, "the pointer after REORGA IS\n", 28);
-        int test = mem_ptr->size % getpagesize();
-        if (test != 0) {
-            write(1, "the size is not a multiple of pagesize\n", 40);
-            mem_ptr->size = mem_ptr->size - test;
+            // ft_data = NULL;
         }
         // int ret = munmap(mem_ptr, mem_ptr->size);
-        if (munmap(mem_ptr, mem_ptr->size) != 0)
+        if (munmap(mem_ptr, mem_ptr->size) != 0) {
             write(1, "munmap failed\n", 14);
+            write(1, strerror(errno), ft_strlen(strerror(errno)));
+            // strerror(errno);   
+        }
         mem_ptr = ft_data;
     }
     mem_ptr = ft_data;
